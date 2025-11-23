@@ -599,6 +599,116 @@
       max-height: 100%;
       object-fit: contain;
     }
+    /* --- UPDATED INFO MODAL STYLES --- */
+    /* 1. Make app-container relative so modal sits inside it */
+    .app-container {
+      position: relative; 
+    }
+
+    /* 2. Modal Overlay: Absolute positioning to fill the app container */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.7); /* Dark overlay */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      border-radius: var(--radius);
+    }
+    
+    /* 3. The Card Box */
+    .info-modal-card {
+      width: 90%;       /* Fits within the width with margins */
+      max-width: 535px; 
+      height: 160px;    /* Fits comfortably within the 200px app height */
+      background-color: #2b2b2b;
+      border-radius: 12px;
+      display: flex;
+      padding: 12px;
+      gap: 16px;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      border: 1px solid var(--border-color);
+    }
+
+    .info-close {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      color: #999;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      z-index: 10;
+    }
+    .info-close:hover { color: white; }
+
+    /* Left Side: Image Container */
+    .info-left {
+      width: 140px;
+      background-color: #EBF3FF; /* Light blue background from design */
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .info-left img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+    }
+
+    /* Right Side: Content */
+    .info-right {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      padding-top: 4px;
+      padding-right: 20px;
+      overflow: hidden;
+    }
+
+    .info-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 6px;
+    }
+
+    .info-desc {
+      font-size: 11px;
+      color: #d1d1d1;
+      line-height: 1.4;
+      overflow-y: auto;
+      padding-bottom: 20px; /* Space for dots */
+      scrollbar-width: none; /* Hide scrollbar for cleaner look */
+    }
+    .info-desc::-webkit-scrollbar { display: none; }
+    
+    .info-desc ul { margin: 0; padding-left: 16px; }
+    .info-desc li { margin-bottom: 2px; }
+    .info-desc p { margin: 0 0 8px 0; }
+
+    /* Bottom: Pagination Dots */
+    .info-dots {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+    }
+    .info-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #555;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .info-dot.active { background-color: white; }
   </style>
 </head>
 <body>
@@ -628,13 +738,40 @@
         img: "https://i.imgur.com/g0RkI56.png",
         content: (
           <Fragment>
-            <p>Import Tool allows you to bring files from various design and data formats directly into Figma...</p>
-            <p style={{marginTop: '10px'}}>It automatically parses content, previews layers, detects fonts...</p>
+            <p>Import Tool allows you to bring files from various design and data formats directly into Figma without external converters.</p>
+            <p style={{marginTop: '10px'}}>It automatically parses content, previews layers, detects fonts, and lets users vectorize text or apply default fonts for perfect visual consistency.</p>
           </Fragment>
         )
       },
-      { title: "Import EPS", img: "https://i.imgur.com/L4Gj1qM.png", content: <p>EPS Importer...</p> },
-      { title: "Up coming updates...", img: "https://i.imgur.com/tOa7U3f.png", content: <p>PSD, AI, CSV...</p> }
+      {
+        title: "Import EPS",
+        img: "https://i.imgur.com/L4Gj1qM.png",
+        content: (
+          <Fragment>
+            <p>EPS (Encapsulated PostScript) Importer - active and fully supported:</p>
+            <ul>
+                <li>Detects fonts in use</li>
+                <li>Option to vectorize or replace fonts</li>
+                <li>Ensures accurate layer conversion</li>
+            </ul>
+          </Fragment>
+        )
+      },
+      {
+        title: "Up coming updates...",
+        img: "https://i.imgur.com/tOa7U3f.png",
+        content: (
+          <Fragment>
+             <ul>
+                <li>PSD (Photoshop)</li>
+                <li>AI (Illustrator)</li>
+                <li>CSV / JSON (Data files)</li>
+                <li>FBX (3D Assets)</li>
+                <li>PowerPoint (Slides)</li>
+            </ul>
+          </Fragment>
+        )
+      }
     ];
 
     const importers = [
@@ -735,6 +872,7 @@
         }
       };
       
+      // --- Footer Renderer ---
       const renderFooter = () => {
         switch (currentView) {
           case 'select_importer':
@@ -743,7 +881,11 @@
           case 'preview':
             return (
               <Fragment>
+                {/* Empty div ensures space-between pushes the buttons to the right */}
+                <div className="footer-left"></div>
+                
                 <div className="footer-center">^</div>
+                
                 <div className="footer-right">
                   <button className="button-secondary" onClick={() => setView('upload')}>Use another</button>
                   <button 
@@ -761,6 +903,7 @@
         }
       };
 
+// --- Sidebar Content Renderer ---
       const renderSidebarContent = () => {
         const nav = (
           <div className="sidebar-nav">
@@ -780,6 +923,14 @@
             </div>
         );
 
+        // Define the buttons so they appear in both Upload and Preview views
+        const sidebarButtons = (
+            <div className="sidebar-footer-buttons">
+              <button className="button-secondary" onClick={() => setView('select_importer')}>Go Back</button>
+              <button className="button-primary">Get Credits</button>
+            </div>
+        );
+
         switch(currentView) {
           case 'preview':
             return (
@@ -790,12 +941,7 @@
                 </div>
                 <div className="sidebar-footer">
                   {credits}
-                  {uploadState === 'done' && (
-                    <div className="sidebar-footer-buttons">
-                      <button className="button-secondary" onClick={() => setView('select_importer')}>Go Back</button>
-                      <button className="button-primary">Get Credits</button>
-                    </div>
-                  )}
+                  {sidebarButtons}
                 </div>
               </Fragment>
             );
@@ -805,6 +951,7 @@
                  {nav}
                  <div className="sidebar-footer">
                    {credits}
+                   {sidebarButtons}
                  </div>
                </Fragment>
              );
@@ -1073,33 +1220,40 @@
     }
 
     // --- Sub-component: Info Modal ---
+    // --- Sub-component: Info Modal (Updated) ---
     function InfoModal({ onClose }) {
       const [page, setPage] = useState(0);
       const currentPage = infoModalPages[page];
 
       return (
-        <div className="modal-overlay info-modal">
-          <div className="modal-content">
-            <header className="info-modal-header">
-              <h4>{currentPage.title}</h4>
-              <span className="close-button" onClick={onClose}>×</span>
-            </header>
-            <main className="info-modal-body">
-              <img src={currentPage.img} alt={currentPage.title} />
-              <div className="info-modal-text">
-                <h5>{currentPage.title}</h5>
-                {currentPage.content}
-              </div>
-            </main>
-            <footer className="info-modal-footer">
+        <div className="modal-overlay">
+          <div className="info-modal-card">
+            {/* Close Button */}
+            <div className="info-close" onClick={onClose}>×</div>
+            
+            {/* Left Image Area */}
+            <div className="info-left">
+               <img src={currentPage.img} alt={currentPage.title} />
+            </div>
+            
+            {/* Right Text Area */}
+            <div className="info-right">
+               <div className="info-title">{currentPage.title}</div>
+               <div className="info-desc">
+                 {currentPage.content}
+               </div>
+            </div>
+
+            {/* Bottom Pagination Dots */}
+            <div className="info-dots">
               {infoModalPages.map((_, index) => (
                 <div 
                   key={index}
-                  className={`dot ${index === page ? 'active' : ''}`}
+                  className={`info-dot ${index === page ? 'active' : ''}`}
                   onClick={() => setPage(index)}
                 />
               ))}
-            </footer>
+            </div>
           </div>
         </div>
       );
