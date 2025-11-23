@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Import Tool</title>
+  <title>Import Tool (Favorites Updated)</title>
   <style>
     /* --- NEW FONT AND COLOR SYSTEM --- */
     @font-face {
@@ -19,7 +19,7 @@
     *::after {
        font-family: "HankenGrotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
     }
-     :root {
+    :root {
       --bg: #181818;
        --panel: #242424;
        --panel-2: #282828;
@@ -85,7 +85,7 @@
       height: 200px;
       background-color: var(--panel);
       border-radius: var(--radius);
-      border: 1px solid var(----card-border);
+      border: 1px solid var(--card-border);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -101,17 +101,17 @@
       border-bottom: 1px solid var(--card-border);
       background-color: var(--panel-2);
     }
-    .header-left { display: flex; align-items: center; gap: 8px; }
+    .header-left { display: flex; align-items: center; gap: 8px; }
     .header-logo-img { /* For the new header icon */
       width: 16px;
       height: 16px;
     }
-    .header-title { 
+    .header-title { 
       font-weight: 500; 
       font-size: 14px; 
       color: var(--white);
     }
-    .close-button { 
+    .close-button { 
       cursor: pointer; 
       opacity: 0.7; 
       font-size: 20px; 
@@ -277,76 +277,89 @@
     .button-primary:hover { background-color: var(--blue-hover); }
 
     /* ================================================= */
-    /* == View 1: Importer Grid Styles == */
+    /* == View 1: Importer Grid Styles (FIXED) == */
     /* ================================================= */
     .importer-tabs {
-      display: inline-flex; /* Fit to content */
-      gap: 4px;
+      display: inline-flex;
       background-color: var(--panel-2);
-      border: 1px solid var(--card-border);
       border-radius: 8px;
       padding: 4px;
+      gap: 2px;
+      align-self: flex-start; /* Aligns tab to left */
     }
     .importer-tab-button {
       font-family: inherit;
       font-weight: 500;
       font-size: var(--fs-sm);
-      border: 1px solid transparent; /* For active state */
-      border-radius: 6px; /* Inner radius */
+      border: none;
+      border-radius: 6px;
       padding: 6px 12px;
       cursor: pointer;
       /* Inactive state */
       background-color: transparent;
       color: var(--muted);
       transition: all 0.2s;
+      outline: none; /* Removes yellow border on click */
     }
     .importer-tab-button:hover {
       color: var(--white);
-      background-color: var(--fc4);
     }
     .importer-tab-button.active {
-      /* Active state (like "All Importers" button) */
-      background-color: var(--bg);
+      /* Active state */
+      background-color: var(--bg-light); /* Lighter grey pill */
       color: var(--white);
-      border-color: #E5A800;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
+    
     .importer-grid {
       display: flex;
       gap: 16px;
       padding-top: 16px;
     }
+    
+    /* Importer Tile */
     .importer-icon {
-      width: 80px; height: 80px;
+      position: relative; /* Crucial for positioning the heart */
+      width: 80px; 
+      height: 80px;
       background-color: var(--panel-2);
       border-radius: var(--radius);
       border: 1px solid var(--card-border);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
+      display: flex; 
+      flex-direction: column;
+      align-items: center; 
+      justify-content: center;
       font-size: var(--fs-sm);
       color: var(--white);
       cursor: pointer;
       transition: all 0.2s;
-      position: relative;
     }
-    .importer-icon:hover { background-color:var(--muted-2); }
-    .importer-icon img { width: 40px; /* Larger icon */
-      height: 40px; 
+    .importer-icon:hover { 
+      background-color: var(--muted-2); 
+    }
+    
+    /* File Icon (Center) */
+    .importer-icon img.file-icon { 
+      width: 32px; 
+      height: 32px; 
       margin-bottom: 8px; 
-      object-fit: contain; }
+      object-fit: contain; 
+      display: block;
+      z-index: 1; 
+    }
+    
+    /* Favorite Heart (Top Right Corner - FIXED) */
     .favorite-icon-img {
-      position: absolute;
-      top: 10px; right: 10px;
-      width: 14px;
-      height: 14px;
-      color: white;
-      opacity: 0.7;
+       position: absolute;
+       top: 8px;           /* Exact positioning from top */
+       right: 8px;         /* Exact positioning from right */
+       width: 14px !important;  /* Force small size */
+       height: 12px !important; /* Force small size */
+       object-fit: contain;
+       cursor: pointer;
+       z-index: 5;
     }
-    .favorite-icon-img:hover {
-      opacity: 1;
-    }
-    .favorite-icon-img[src=""] {
-      display: none;
-    }
+    .favorite-icon-img:hover { transform: scale(1.1); }
 
     /* ================================================= */
     /* == View 2: Upload Styles == */
@@ -356,18 +369,19 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100%;
-      background-color: var(--bg-darkest);
-      border: 1px dashed var(--border-color);
-      border-radius: 8px;
+      height: 140px; 
+      width: 100%;
+      background-color: #1b1b1b;
+      border: 1px dashed rgba(255,255,255,0.18);
+      border-radius: 12px;
       cursor: pointer;
-      transition: all 0.2s;
-      text-align: center;
+      transition: border-color .2s ease;
+      padding: 20px 0;
     }
-    .upload-view:hover { border-color: var(--blue-primary); border-style: solid; }
-    .upload-view img { width: 32px; height: 32px; }
-    .upload-view p { margin: 8px 0 4px 0; }
-    .upload-view .small { font-size: 12px; color: var(--text-dim); margin-top: 0; }
+    .upload-view:hover { border-color: #2b66ee; border-style: solid; }
+    .upload-view img { width: 38px; height: 38px; margin-bottom: 6px;}
+    .upload-view p { margin: 0; margin-top: 4px;font-size: 13px;}
+    .upload-view .small { font-size: 11px; opacity: 0.6;; margin-top: 0px; }
 
     /* ================================================= */
     /* == View 3: Preview Styles == */
@@ -603,13 +617,9 @@
       parent.postMessage({ pluginMessage: { type, payload } }, '*');
     }
 
-    // --- ADD YOUR ICON URLS HERE ---
-    const FAVORITE_ICON_URL = "https://res.cloudinary.com/dvufcaqt1/image/upload/v1762860783/Vector_1_okcrww.svg";
-    const UNFAVORITE_ICON_URL = ""; // Set to "" for "blank" as requested
-
-    // Add your header icon URL here
-    const HEADER_ICON_URL = "";
-    // This is the broken image URL from your screenshot
+    // --- ICONS ---
+    const HOLLOW_HEART = "https://res.cloudinary.com/dvufcaqt1/image/upload/v1760420877/hollow_heart_djzhfx.svg";
+    const FILL_HEART = "https://res.cloudinary.com/dvufcaqt1/image/upload/v1760420877/fill_heart_qoglfe.svg";
     const PREVIEW_IMAGE_URL = "https://i.imgur.com/v81mU6y.png";
 
     const infoModalPages = [
@@ -647,9 +657,8 @@
       const [isVectorized, setIsVectorized] = useState(true);
       const [creditBalance, setCreditBalance] = useState(2);
       
-      // --- NEW STATE FOR FAVORITES ---
       const [activeTab, setActiveTab] = useState('all');
-      const [favorites, setFavorites] = useState({ eps: true }); // Default 'eps' to favorited
+      const [favorites, setFavorites] = useState({ eps: true }); 
       
       const dummyFontData = [
         { name: 'Hanken Grotesk (Regular)', isAvailable: true },
@@ -693,7 +702,6 @@
         postMessage('import-file', { vectorized: isVectorized, fonts: dummyFontData });
       };
 
-      // --- NEW FUNCTION for toggling favorites ---
       const toggleFavorite = (id) => {
         setFavorites(prevFavorites => ({
           ...prevFavorites,
@@ -702,7 +710,6 @@
         postMessage('toggle-favorite', { id: id, isFavorite: !favorites[id] });
       };
 
-      // --- Main Area Renderer ---
       const renderMainArea = () => {
         switch (currentView) {
           case 'select_importer':
@@ -728,7 +735,6 @@
         }
       };
       
-      // --- Footer Renderer ---
       const renderFooter = () => {
         switch (currentView) {
           case 'select_importer':
@@ -755,7 +761,6 @@
         }
       };
 
-      // --- Sidebar Content Renderer ---
       const renderSidebarContent = () => {
         const nav = (
           <div className="sidebar-nav">
@@ -770,7 +775,7 @@
 
         const credits = (
            <div className="credit-balance">
-              <simg src="https://res.cloudinary.com/dvufcaqt1/image/upload/v1762805325/Vector_bgol9a.svg" alt="Credits" className="credit-icon-img" />
+              <img src="https://res.cloudinary.com/dvufcaqt1/image/upload/v1762805325/Vector_bgol9a.svg" alt="Credits" className="credit-icon-img" />
               <span>Your current credit balance is {creditBalance} credits</span>
             </div>
         );
@@ -787,7 +792,6 @@
                   {credits}
                   {uploadState === 'done' && (
                     <div className="sidebar-footer-buttons">
-                      {/* FIX: Typo corrected */}
                       <button className="button-secondary" onClick={() => setView('select_importer')}>Go Back</button>
                       <button className="button-primary">Get Credits</button>
                     </div>
@@ -795,17 +799,15 @@
                 </div>
               </Fragment>
             );
-          
           case 'upload':
              return (
-              <Fragment>
-                {nav}
-                <div className="sidebar-footer">
-                  {credits}
-                </div>
-              </Fragment>
-            );
-            
+               <Fragment>
+                 {nav}
+                 <div className="sidebar-footer">
+                   {credits}
+                 </div>
+               </Fragment>
+             );
           case 'select_importer':
           default:
             return (
@@ -819,7 +821,6 @@
         }
       };
     
-      // --- Final Render ---
       return (
         <Fragment>
           <div className="app-container">
@@ -888,16 +889,16 @@
                   else alert(`${importer.name} importer is coming soon!`);
                 }}
               >
-                <span 
-                  className={`heart-icon ${favorites[importer.id] ? 'filled' : ''}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavorite(importer.id);
-                  }}
-                >
-                  {favorites[importer.id] ? '♥' : '♡'}
-                </span>
-                <img src={importer.icon} alt={importer.name} />
+                {/* Favorite icon placed top-right using the requested cloudinary assets. */}
+                <img 
+                  className="favorite-icon-img" 
+                  src={favorites[importer.id] ? FILL_HEART : HOLLOW_HEART} 
+                  alt={favorites[importer.id] ? 'Favorited' : 'Not favorited'}
+                  onClick={(e) => { e.stopPropagation(); toggleFavorite(importer.id); }}
+                />
+
+                {/* Added 'file-icon' class here to style it separately */}
+                <img className="file-icon" src={importer.icon} alt={importer.name} />
                 {importer.name}
               </div>
             ))}
@@ -922,9 +923,6 @@
       
       const renderPreviewBox = () => {
         if (uploadState === 'done') {
-          // *** THE FIX IS HERE ***
-          // We render the <img> tag, which will correctly show the broken image 
-          // placeholder from your screenshot.
           return (
             <Fragment>
               <img src={PREVIEW_IMAGE_URL} alt="Preview" />
@@ -932,7 +930,6 @@
             </Fragment>
           );
         }
-        // Show processing spinner
         return (
           <div className="preview-box-processing">
             <div className="spinner"></div>
@@ -943,7 +940,6 @@
 
       const renderFontList = () => {
         if (uploadState === 'done') {
-          // Show the final font list
           return (
             <Fragment>
               <p className="info-text">
@@ -963,7 +959,6 @@
             </Fragment>
           );
         }
-        // Show processing spinner
         return (
           <div className="font-list-box-processing">
             <div className="spinner"></div>
@@ -1012,8 +1007,6 @@
           setTimeout(() => setProgress(60), 500);
           setTimeout(() => setProgress(100), 1200);
         }
-        // *** THIS IS THE FIX FOR THE INFINITE LOOP ***
-        // Only set progress when state *changes* to 'processing'
         if (uploadState === 'processing') {
            setProgress(100); 
         }
@@ -1022,7 +1015,6 @@
       let statusText = "Uploading...";
       if (uploadState === 'processing') {
         statusText = "Processing...";
-        // No setProgress(100) here!
       }
       if (uploadState === 'done') statusText = "Uploaded";
       
@@ -1118,7 +1110,6 @@
       return (
         <div className="modal-overlay" onClick={onClose}>
           <div className="modal-content enlarge-modal-content" onClick={(e) => e.stopPropagation()}>
-            {/* It will show the broken image here too, matching the preview */ }
             <img src={imgSrc} alt="Enlarged preview" />
           </div>
         </div>
